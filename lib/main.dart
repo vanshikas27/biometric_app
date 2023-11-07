@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.red,
           scaffoldBackgroundColor: Colors.black,
         ),
-        home: MainPage(title: title),
+        home: AuthScreen(), //MainPage(title: title),
       );
 }
 

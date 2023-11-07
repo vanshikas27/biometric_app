@@ -12,6 +12,7 @@ class _PassedScreenState extends State<PassedScreen> {
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(title: Text('auth passed')),
+      body: Text('POST Request successful', style: TextStyle(color: Colors.white, fontSize: 24),),
     );
   } 
 }
