@@ -39,6 +39,8 @@ dependencies:
   flutter_barcode_scanner: ^2.0.0
   url_launcher: ^6.2.1
   http: ^1.1.0
+  uni_links: ^0.5.1
+  account_picker: ^2.1.0
 
 dev_dependencies:
   flutter_test:

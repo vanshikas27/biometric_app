@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'package:biometric_app/authentication.dart';
 import 'package:biometric_app/passed_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:uni_links/uni_links.dart';
+import 'package:account_picker/account_picker.dart';
 
 
 class AuthScreen extends StatefulWidget{
@@ -20,6 +23,43 @@ class _AuthScreen extends State<AuthScreen>{
   String email='';
   final emailController=TextEditingController();
   final emailRegex = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+", );
+
+  String _clientId='';
+  String _sessionId='';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initUniLinks();
+    initPlatformState();
+  }
+  Future<void> initPlatformState() async{
+    if(!mounted) return;
+  }
+
+  Future<void> initUniLinks() async{
+    try{
+      final initialLink= await getInitialLink();
+      print(initialLink);
+      if(initialLink!=null){
+        print('if not null-> $initialLink');
+        setState(() {
+          _clientId=Uri.parse(initialLink).queryParameters['clientId']!;
+          _sessionId=Uri.parse(initialLink).queryParameters['sessionId']!;
+        });
+      }
+    }on PlatformException{
+      print('Platform exception occured while getting initial link.');
+    }
+  }
+
+  void updateEmail(String newEmail) {
+    emailController.text = newEmail;
+    setState(() {
+      email = newEmail;
+    });
+  }
 
   bool _validateCredentials(){
     final _isValid=_formKey.currentState!.validate();
@@ -72,10 +112,13 @@ class _AuthScreen extends State<AuthScreen>{
                   context: context, 
                   builder: (context){
                     return AlertDialog(
-                      title: Text('Enter Email'),
+                      title: Text('Select Email'),
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          SizedBox(height: 20,),
+                          Text('Email/Phone: '),
+                          SizedBox(height: 20,),
                           Form(
                             key: _formKey,
                             child: TextFormField(
@@ -86,12 +129,24 @@ class _AuthScreen extends State<AuthScreen>{
                                 return null;
                               },
                               onChanged: (value){
-                                setState(() {
-                                  email=value;
-                                });
+                               updateEmail(value);
                               },
                             ),
                           ),
+                          SizedBox(height: 20,),
+                          ElevatedButton(onPressed: () async{
+                            final EmailResult? emailResult=await AccountPicker.emailHint();
+                            print(emailResult);
+                            if(emailResult!=null){
+                              updateEmail(emailResult.email);
+                            }
+                            else{
+                              final String? phone = await AccountPicker.phoneHint();
+                              if(phone!=null){
+                                updateEmail(phone);
+                              }
+                            }
+                          }, child: Text('Pick Email')),
                         ],
                       ),
                       actions: [
