@@ -92,19 +92,44 @@ class _AuthScreen extends State<AuthScreen> {
           "sessionId": _sessionId,
         }),
       );
+      if (response.statusCode == 200) {
+        Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => const PassedScreen()));
+      } else {
+        displayAlertDialog(context);
+      }
       print(response.statusCode);
       print(response.body);
-      
-      //if post request successful-> move to passedscreen
-      if(response.statusCode==200){
-        Navigator.of(context).push(
-            MaterialPageRoute(
-                builder: (context) =>
-                    const PassedScreen()));
-      }
     } catch (error) {
       print(error);
     }
+  }
+
+  void displayAlertDialog(BuildContext context) {
+    // set up the button
+    Widget okButton = TextButton(
+      child: const Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("Error"),
+      content: const Text("Something went wrong! Authentication has failed."),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   void dispose() {
@@ -122,24 +147,20 @@ class _AuthScreen extends State<AuthScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // TextButton(onPressed: (){Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const QrPage()));}, child: Text('Go to QR page')),
-              Text('Login to the app'),
-              Text('use biometrics'),
+              // const Text('Login to the app'),
+              // const Text('use biometrics'),
               ElevatedButton.icon(
                   onPressed: () async {
                     await showDialog(
                         context: context,
                         builder: (context) {
                           return AlertDialog(
-                            title: Text('Select Email'),
+                            title: const Text('Please enter your Email'),
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Text('Email/Phone: '),
-                                SizedBox(
-                                  height: 20,
+                                const SizedBox(
+                                  height: 10,
                                 ),
                                 Form(
                                   key: _formKey,
@@ -148,17 +169,19 @@ class _AuthScreen extends State<AuthScreen> {
                                     validator: (value) {
                                       if (value == null || value.isEmpty) {
                                         return 'Email is required';
-                                      } else if (!emailRegex.hasMatch(value))
+                                      } else if (!emailRegex.hasMatch(value)) {
                                         return 'Invalid email address';
-                                      return null;
+                                      } else {
+                                        return null;
+                                      }
                                     },
                                     onChanged: (value) {
                                       updateEmail(value);
                                     },
                                   ),
                                 ),
-                                SizedBox(
-                                  height: 20,
+                                const SizedBox(
+                                  height: 24,
                                 ),
                                 ElevatedButton(
                                     onPressed: () async {
@@ -175,7 +198,7 @@ class _AuthScreen extends State<AuthScreen> {
                                         }
                                       }
                                     },
-                                    child: Text('Pick Email')),
+                                    child: const Text('Select an account')),
                               ],
                             ),
                             actions: [
@@ -183,7 +206,7 @@ class _AuthScreen extends State<AuthScreen> {
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text('Cancel'),
+                                child: const Text('Cancel'),
                               ),
                               TextButton(
                                   onPressed: () async {
@@ -197,16 +220,20 @@ class _AuthScreen extends State<AuthScreen> {
                                       //if auth passed-> make the api call
                                       if (auth) {
                                         APICall();
+                                        //   Navigator.of(context).push(
+                                        //       MaterialPageRoute(
+                                        //           builder: (context) =>
+                                        //               const PassedScreen()));
                                       }
                                     }
                                   },
-                                  child: Text('Authenticate'))
+                                  child: const Text('Authenticate'))
                             ],
                           );
                         });
                   },
-                  icon: Icon(Icons.login),
-                  label: Text('Proceed To Authentication')),
+                  icon: const Icon(Icons.login),
+                  label: const Text('Proceed To Authentication')),
             ],
           ),
         ),

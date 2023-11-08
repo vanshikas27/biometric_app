@@ -22,10 +22,12 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: title,
         theme: ThemeData(
-          primaryColor: Colors.red,
-          scaffoldBackgroundColor: Colors.black,
+          primaryColor: Colors.blueAccent,
+          primaryColorDark: Colors.blue,
+          scaffoldBackgroundColor: Colors.white,
         ),
-        home: AuthScreen(), //MainPage(title: title),
+        // home: MainPage(title: title),
+        home: const AuthScreen(),
       );
 }
 
